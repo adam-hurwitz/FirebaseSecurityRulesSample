@@ -39,18 +39,18 @@ class MainActivity : AppCompatActivity() {
         }
 
         signInButton.setOnClickListener {
-            if (FirebaseAuth.getInstance().currentUser == null) {
+            if (FirebaseAuth.getInstance(FirebaseApp.getInstance("firestoreSecuritySample")).currentUser == null) {
                 val providers = Arrays.asList<AuthUI.IdpConfig>(
                         AuthUI.IdpConfig.GoogleBuilder().build())
 
                 startActivityForResult(
-                        AuthUI.getInstance()
+                        AuthUI.getInstance(FirebaseApp.getInstance("firestoreSecuritySample"))
                                 .createSignInIntentBuilder()
                                 .setAvailableProviders(providers)
                                 .build(),
                         123)
             } else {
-                AuthUI.getInstance().signOut(this).addOnCompleteListener {
+                AuthUI.getInstance(FirebaseApp.getInstance("firestoreSecuritySample")).signOut(this).addOnCompleteListener {
                     signInStatus.text = "logged out"
                 }
             }
@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         getDataButton.setOnClickListener {
             FirebaseFirestore.getInstance(FirebaseApp.getInstance("firestoreSecuritySample"))
                     .collection("testCollection").document("testDoc").get().addOnCompleteListener {
-                        if (FirebaseAuth.getInstance().currentUser != null) {
+                        if (FirebaseAuth.getInstance(FirebaseApp.getInstance("firestoreSecuritySample")).currentUser != null) {
                             firestoreResult.text = it.result!!.get("testField").toString()
                         }
                     }
@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 123) {
             if (resultCode == Activity.RESULT_OK) {
-                val user = FirebaseAuth.getInstance().currentUser
+                val user = FirebaseAuth.getInstance(FirebaseApp.getInstance("firestoreSecuritySample")).currentUser
                 if (user != null) {
                     signInStatus.text = user.displayName
                 }
